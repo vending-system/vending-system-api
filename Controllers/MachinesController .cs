@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-//[Authorize]
+[Authorize]
 public class MachinesController(IMachineService machineService) : ControllerBase
 {
     private readonly IMachineService _machineService = machineService;
@@ -20,7 +20,10 @@ public class MachinesController(IMachineService machineService) : ControllerBase
         var machine = await _machineService.GetMachineAsync(id);
         return machine == null ? NotFound($"ТА с ID {id} не найден") : Ok(machine);
     }
-
+    [HttpGet("stats")]
+    public async Task<IActionResult> GetNetworkStats()
+        => Ok(await _machineService.GetNetworkStatsAsync());
+        
     [HttpPost]
     public async Task<ActionResult<MachineListDto>> CreateMachine(CreateMachineDto dto)
     {

@@ -30,7 +30,19 @@ namespace ApiVending.Services.TA
         } : null,
         LocationAddress = m.LocationAddress,
         CommissioningDate = m.CommissioningDate,
-        ModemId = m.ModemId
+        ModemId = m.ModemId,
+        CurrentCash = m.CurrentCash,
+        LastCalibrationDate = m.LastCalibrationDate,
+        CalibrationIntervalMonths = m.CalibrationIntervalMonths,
+        NextCalibrationDate = m.LastCalibrationDate.HasValue && m.CalibrationIntervalMonths.HasValue? m.LastCalibrationDate.Value.AddMonths(m.CalibrationIntervalMonths.Value)
+        : null,
+        
+        InventoryNumber = m.InventoryNumber,
+        Manufacturer = m.Manufacturer,
+        Country = m.Country,
+        ManufactureDate = m.ManufactureDate,
+        ResourceHoursTotal = m.ResourceHoursTotal,
+        ServiceTimeHours = m.ServiceTimeHours,
     };
 
     public async Task<PaginatedResponse<MachineListDto>> GetMachinesAsync(int page, int limit)
@@ -89,6 +101,14 @@ namespace ApiVending.Services.TA
         DateOnly? lastCalibrationDate = null;
         if (dto.LastCalibrationDate != null)
             lastCalibrationDate = DateOnly.FromDateTime(dto.LastCalibrationDate.Value);
+            
+        if (lastCalibrationDate.HasValue)
+        {
+            if (lastCalibrationDate.Value < manufactureDate)
+                throw new ArgumentException("Дата поверки не может быть раньше даты изготовления");
+            if (lastCalibrationDate.Value > DateOnly.FromDateTime(DateTime.Today))
+                throw new ArgumentException("Дата поверки не может быть позже текущей даты");
+        }
 
         var machine = new VendingMachine
         {
@@ -108,7 +128,7 @@ namespace ApiVending.Services.TA
             CalibrationIntervalMonths = dto.CalibrationIntervalMonths,
             ResourceHoursTotal = dto.ResourceHoursTotal,
             ServiceTimeHours = dto.ServiceTimeHours,
-            CurrentCash = dto.CurrentCash ?? 0,
+            CurrentCash = dto.CurrentCash ?? 1000,
             TotalRevenue = dto.TotalRevenue ?? 0,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -124,7 +144,22 @@ namespace ApiVending.Services.TA
 
         return MapToDto(created!);
     }
-
+    public async Task<object> GetNetworkStatsAsync()
+{
+    var machines = await _context.VendingMachines.ToListAsync();
+    var total = machines.Count;
+    var working = machines.Count(m => m.StatusId == 1);
+    return new
+    {
+        TotalMachines = total,
+        WorkingMachines = working,
+        BrokenMachines = machines.Count(m => m.StatusId == 2),
+        MaintenanceMachines = machines.Count(m => m.StatusId == 3),
+        EfficiencyPercent = total > 0 ? Math.Round((double)working / total * 100, 1) : 0,
+        TotalCash = machines.Sum(m => m.CurrentCash ?? 0),
+        TotalRevenue = machines.Sum(m => m.TotalRevenue ?? 0)
+    };
+}
     public async Task UpdateMachineAsync(int id, CreateMachineDto dto)
     {
         var machine = await _context.VendingMachines.FindAsync(id)

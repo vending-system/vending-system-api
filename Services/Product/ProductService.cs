@@ -120,10 +120,9 @@ namespace ApiVending.Services.Product
         var product = await _context.Products.FindAsync(id)
             ?? throw new KeyNotFoundException($"Товар с ID {id} не найден");
 
-        var inventory = await _context.MachineInventories
-            .Include(i => i.Machine)
-            .Where(i => i.ProductId == id)
-            .Select(i => new
+        var inventory = await _context.MachineInventories.Include(i => i.Machine)
+        .Where(i => i.ProductId == id)
+        .Select(i => new
             {
                 i.MachineId,
                 MachineName = i.Machine != null ? i.Machine.Name : "Неизвестно",
@@ -193,5 +192,24 @@ namespace ApiVending.Services.Product
             })
             .ToListAsync();
     }
-}
+
+        public async Task<object> UpdateАmountAsync(int productId, int machineId, int quantity)
+    {
+        var inventory = await _context.MachineInventories.FirstOrDefaultAsync(i => i.ProductId == productId && i.MachineId == machineId)
+         ?? throw new KeyNotFoundException("Товар в аппарате не найден");
+
+        if (quantity < 0)
+        throw new ArgumentException("Количество не может быть отрицательным");
+
+        inventory.Quantity += quantity;
+        inventory.LastUpdated = DateTime.UtcNow;
+    
+        await _context.SaveChangesAsync();
+    
+        return new {  productId,  machineId, 
+            quantity = inventory.Quantity,
+            message = $"{quantity} единиц товара {productId} добавлено в автомат {machineId}" 
+        };
+    }
+    }
 }

@@ -13,10 +13,10 @@ namespace ApiVending.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     public class UsersController(IUsersServices usersServices) : ControllerBase
     {
-        private readonly IUsersServices _usersServices = usersServices;
+    private readonly IUsersServices _usersServices = usersServices;
     [HttpGet]
     public async Task<ActionResult<List<UserDto>>> GetUsers(string? name)
     {

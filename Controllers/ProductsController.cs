@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-//[Authorize]
+[Authorize]
 public class ProductsController(IProductService productService) : ControllerBase
 {
     private readonly IProductService _productService = productService;
@@ -54,4 +54,8 @@ public class ProductsController(IProductService productService) : ControllerBase
     [HttpGet("low-stock")]
     public async Task<IActionResult> GetLowStockProducts()
         => Ok(await _productService.GetLowStockProductsAsync());
+
+    [HttpPatch("{productId}/machines/{machineId}/quantity")]
+    public async Task<IActionResult> UpdateQuantity( int productId, int machineId, [FromBody] int quantity)
+    => Ok(await _productService.UpdateАmountAsync(productId, machineId, quantity));
 }

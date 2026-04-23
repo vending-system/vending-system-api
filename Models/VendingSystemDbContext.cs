@@ -42,7 +42,7 @@ public partial class VendingSystemDbContext : DbContext
     public virtual DbSet<VendingMachine> VendingMachines { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=VendingSystemDB;Username=postgres;Password=_");
+        => optionsBuilder.UseNpgsql("Host=localhost;Database=VendingSystemDB;Username=postgres;Password=Asdfgh415");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

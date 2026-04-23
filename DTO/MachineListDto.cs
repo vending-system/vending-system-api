@@ -16,5 +16,15 @@ namespace ApiVending.DTO
         public string?  LocationAddress { get; set; }
         public DateOnly  CommissioningDate { get; set; }
         public string?  ModemId { get; set; }
+        public DateOnly? LastCalibrationDate { get; set; }
+        public DateOnly? NextCalibrationDate { get; set; }
+        public int? CalibrationIntervalMonths { get; set; }
+        public string? InventoryNumber { get; set; } 
+        public string? Manufacturer { get; set; } 
+        public string? Country { get; set; }
+        public decimal? CurrentCash { get; set; }   
+        public DateOnly ManufactureDate { get; set; }
+        public int? ResourceHoursTotal { get; set; }
+        public int? ServiceTimeHours { get; set; }
     }
 }

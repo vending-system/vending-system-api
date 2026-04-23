@@ -16,5 +16,7 @@ namespace ApiVending.Services.Product
         Task<object> GetProductInventoryAsync(int id);
         Task<object> AddProductToMachineAsync(int productId, int machineId, int quantity);
         Task<object> GetLowStockProductsAsync();
+        Task<object> UpdateАmountAsync(int productId, int machineId, int amount);
+        
     }
 }

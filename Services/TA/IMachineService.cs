@@ -15,5 +15,6 @@ namespace ApiVending.Services.TA
         Task DeleteMachineAsync(int id);
         Task<object> UnlinkModemAsync(int id);
         Task<object> GetRealtimeDataAsync(int id);
+        Task<object> GetNetworkStatsAsync();
     }
 }

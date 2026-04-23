@@ -115,7 +115,6 @@ public class ServiceTaskService(VendingSystemDbContext context) : IServerTask
         await _context.SaveChangesAsync();
         await LogStatusAsync(task.Id, "Новая", "В работе");
     }
-
     public async Task CompleteTaskAsync(int id)
     {
         var task = await _context.ServiceTasks.FindAsync(id)
@@ -128,7 +127,6 @@ public class ServiceTaskService(VendingSystemDbContext context) : IServerTask
         await _context.SaveChangesAsync();
         await LogStatusAsync(task.Id, oldStatus, "Закрыта");
     }
-
     public async Task AssignTaskAsync(int taskId, int userId)
     {
         var task = await _context.ServiceTasks.FindAsync(taskId)
@@ -138,7 +136,6 @@ public class ServiceTaskService(VendingSystemDbContext context) : IServerTask
         task.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
     }
-
     public async Task DeleteTaskAsync(int id)
     {
         var task = await _context.ServiceTasks.FindAsync(id)
@@ -148,8 +145,8 @@ public class ServiceTaskService(VendingSystemDbContext context) : IServerTask
             throw new InvalidOperationException("Задача в работе");
 
         _context.ServiceTasks.Remove(task);
+        await _context.SaveChangesAsync(); 
         await LogStatusAsync(task.Id, task.Status, "Удалена");
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateTaskAsync(int id, UpdateServiceTaskDto dto)

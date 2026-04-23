@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-//[Authorize]
+[Authorize]
 public class SalesController(ISales salesService) : ControllerBase
 {
     private readonly ISales _salesService = salesService;
